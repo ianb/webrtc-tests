@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Test RTCPeerConnection</title>
+    <script src="doctestjs/doctest.js"></script>
+    <link href="doctestjs/doctest.css" rel="stylesheet" type="text/css">
+  </head>
+  <body class="autodoctest">
+
+
+<p>Tests:
+  <a href="?test-name=test_peerconnection.js">test_peerconnection.js</a>
+  <a href="?test-name=test_peerconnection_video.js">test_peerconnection_video.js</a>
+  <a href="?test-name=test_peerconnection_audio.js">test_peerconnection_audio.js</a>
+  <a href="?test-name=test_peerconnection_no_streams.js">test_peerconnection_no_streams.js</a>
+  <a href="?test-name=test_mediastream.js">test_mediastream.js</a>
+</p>
+
+<p>
+Let's make sure stuff is sane:
+
+<pre class="commenttest expand-on-failure">
+if (window.mozRTCPeerConnection) {
+  RTCPeerConnection = mozRTCPeerConnection;
+}
+
+if (typeof RTCPeerConnection == "undefined") {
+  console.warn("RTCPeerConnection is not supported in this browser, cannot test!");
+  Abort();
+}
+
+repr.register(
+  // FIXME: this is a lame way to detect something is a connection
+  // FIXME: should `obj instanceof RTCPeerConnection` work?
+  function (o) {
+    return typeof o == "object" && o.addIceCandidate !== undefined;
+  }, function (o, indentString) {
+    var lines = [];
+    lines.push('readyState: ' + compactRepr(o.readyState));
+    if (["new", "have-local-offer", "have-local-pranswer", "have-remote-pranswer", "active", "closed"].indexOf(o.readyState) == -1) {
+      lines[lines.length-1] += ' (invalid readyState)';
+    }
+    lines.push('iceState: ' + compactRepr(o.iceState));
+    if (["starting", "checking", "connected", "completed", "failed", "disconnected", "closed"].indexOf(o.iceState) == -1) {
+      lines[lines.length-1] += ' (invalid iceState)';
+    }
+    lines.push('iceGatheringState: ' + compactRepr(o.iceGatheringState));
+    if (["new", "gathering", "complete"].indexOf(o.iceGatheringState) == -1) {
+      lines[lines.length-1] += ' (invalid iceGatheringState)';
+    }
+    if (o.localDescription) {
+      lines.push('localDescription set: ' + compactRepr(o.localDescription.type));
+    }
+    if (o.remoteDescription) {
+      lines.push('remoteDescription set: ' + compactRepr(o.remoteDescription.type));
+    }
+    if (! o.localStreams) {
+      lines.push('invalid undefined localStreams');
+    } else if (o.localStreams.length) {
+      lines.push('localStreams: ' + repr.arrayRepr(o.localStreams, indentString+'  '));
+    } else {
+      lines.push('no localStreams');
+    }
+    if (! o.remoteStreams) {
+      lines.push('invalid undefined remoteStreams');
+    } else if (o.remoteStreams.length) {
+      lines.push('remoteStreams: ' + repr.arrayRepr(o.remoteStreams, indentString+'  '));
+    } else {
+      lines.push('no remoteStreams');
+    }
+    return (
+      '[RTCPeerConnection\n' + indentString + '  ' +
+      lines.join('\n' + indentString + '  ') + '\n' + indentString + ']');
+  }
+);
+
+function compactRepr(s) {
+  if (typeof s == "string") {
+    return s;
+  } else {
+    return '(' + repr(s) + ')';
+  }
+}
+
+// =>
+
+print(RTCPeerConnection);
+
+// => [object ...RTCPeerConnection]
+
+var src = doctest.params['test-name'];
+if (src) {
+  jshint(src);
+}
+
+// => ...
+</pre>
+
+</p>
+
+<p>
+
+  Now some real tests.
+
+  <pre class="commenttest" data-href-pattern="./{test-name:^[\w\-\.]+$}"></pre>
+
+  <!--
+Next video:
+
+  <pre class="commenttest" href="./test_peerconnection_video.js"></pre>
+-->
+
+And the videos:
+
+<div><video id="video1" width="300" height="200" controls></video></div>
+<div><video id="video2" width="300" height="200" controls></video></div>
+
+And some audio:
+
+<div><audio id="audio1" muted></div>
+<div><audio id="audio2" controls></div>
+
+</p>
+
+</body></html>
