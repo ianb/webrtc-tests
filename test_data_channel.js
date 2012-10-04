@@ -11,8 +11,7 @@ var conn1Offer;
 
 print(conn1);
 
-// FIXME: I don't think this is a very nice string:
-// => [xpconnect wrapped (nsISupports, nsIDOMRTCPeerConnection, nsIDOMGlobalObjectConstructor)]
+// => ...
 
 conn1.onDataChannel = function (channel) {
   print('Got channel1', channel);

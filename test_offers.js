@@ -182,6 +182,7 @@ badPC.createOffer(Spy('badPC.createOffer2'), Spy('badPC.createOffer2/failed'));
 wait(function () {return Spy('badPC.createOffer1').called || Spy('badPC.createOffer2').called;});
 
 // FIXME: this isn't correct (note two createOffer2's)
+// sometimes this fails by only printing showing one createOffer2, due to a timing issue with the wait function.
 /* =>
 badPC.createOffer2({
   sdp: "v=0...",
@@ -192,3 +193,10 @@ badPC.createOffer2({
   type: "offer"
 })
 */
+
+var badPC = new RTCPeerConnection();
+
+badPC.createOffer();
+
+// Not sure if this should be a specific exception?
+// => Exception: [Exception...]

@@ -1641,7 +1641,12 @@ Spy.on = function (obj, attrOrOptions, options) {
   spy.overriding = obj[attr];
   spy.onAttribute = attr;
   spy.onObject = obj;
-  obj[attr] = spy;
+  try {
+    obj[attr] = spy;
+  } catch (e) {
+    console.warn('Could not set attribute', attr, 'on object', obj, ':', e);
+    throw e;
+  }
   return spy;
 };
 
