@@ -9,6 +9,8 @@
   <body class="autodoctest">
 
 
+<p>All based on the <a href="http://dev.w3.org/2011/webrtc/editor/webrtc.html">WebRTC spec</a>.</p>
+
 <p>Tests:
   <a href="?test-name=test_peerconnection.js">test_peerconnection.js</a>
   <a href="?test-name=test_peerconnection_video.js">test_peerconnection_video.js</a>
@@ -76,11 +78,12 @@ repr.register(
 );
 
 function compactRepr(s) {
-  if (typeof s == "string") {
-    return s;
-  } else {
-    return '(' + repr(s) + ')';
+  if (typeof s == "string" && ["null", "undefined"].indexOf(s) == -1) {
+    if (parseInt(s).toString() !== s) {
+      return s;
+    }
   }
+  return '(' + repr(s) + ')';
 }
 
 // =>
@@ -94,7 +97,7 @@ if (src) {
   jshint(src);
 }
 
-// => ...
+// => Script passed: ...
 </pre>
 
 </p>
