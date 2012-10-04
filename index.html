@@ -12,11 +12,11 @@
 <p>All based on the <a href="http://dev.w3.org/2011/webrtc/editor/webrtc.html">WebRTC spec</a>.</p>
 
 <p>Tests:
-  <a href="?test-name=test_peerconnection.js">test_peerconnection.js</a>
-  <a href="?test-name=test_peerconnection_video.js">test_peerconnection_video.js</a>
-  <a href="?test-name=test_peerconnection_audio.js">test_peerconnection_audio.js</a>
-  <a href="?test-name=test_peerconnection_no_streams.js">test_peerconnection_no_streams.js</a>
-  <a href="?test-name=test_mediastream.js">test_mediastream.js</a>
+  <a href="?test-name=test_attributes.js">test_attributes</a>
+  <a href="?test-name=test_offers.js">test_offers</a>
+  <a href="?test-name=test_peerconnection_no_streams.js">test_peerconnection_no_streams</a>
+  <a href="?test-name=test_peerconnection_video.js">test_peerconnection_video</a>
+  <a href="?test-name=test_data_channel.js">test_data_channel</a>
 </p>
 
 <p>
@@ -95,6 +95,8 @@ print(RTCPeerConnection);
 var src = doctest.params['test-name'];
 if (src) {
   jshint(src);
+} else {
+  print('Script passed: no script');
 }
 
 // => Script passed: ...
