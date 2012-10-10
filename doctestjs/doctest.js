@@ -187,6 +187,8 @@ var HTMLReporter = exports.HTMLReporter = function (runner, containerEl) {
     '<tr><th>Failures:</th>' +
     '<td id="doctest-failure-count">0</td>' +
     '<td><button id="doctest-reload">reload/retest</button></td></tr>' +
+    '<tr id="doctest-abort-row" style="display: none"><th>Aborted:</th>' +
+    '<td id="doctest-aborted"></td></tr>' +
     '<tr><th></th>' +
     '<td colspan=2 id="doctest-failure-links"></td></tr>' +
     '</table>'
@@ -251,11 +253,30 @@ HTMLReporter.prototype = {
     this.runner._hook('reportFailure', example, got);
   },
 
+  logAbort: function (example, abortMessage) {
+    this.addFailure();
+    this.addAborted(abortMessage);
+    if (example.htmlSpan) {
+      addClass(example.htmlSpan, 'doctest-failure');
+    }
+    if (example.blockEl) {
+      addClass(example.blockEl, 'doctest-some-failure');
+    }
+    this.addExampleNote(example, 'Aborted:', 'doctest-actual-output', abortMessage);
+    this.runner._hook('reportAbort', example, abortMessage);
+  },
+
   addFailure: function () {
     var num = parseInt(this.failureEl.innerHTML, 10);
     num++;
     this.failureEl.innerHTML = num+'';
     addClass(this.failureEl, 'doctest-nonzero');
+  },
+
+  addAborted: function (message) {
+    doc.getElementById('doctest-abort-row').style.display = '';
+    var td = doc.getElementById('doctest-aborted');
+    td.appendChild(doc.createTextNode(message));
   },
 
   showConsoleOutput: function (example, error) {
@@ -302,13 +323,16 @@ HTMLReporter.prototype = {
 
 var ConsoleReporter = exports.ConsoleReporter = function (runner) {
   this.runner = runner;
+  this.successes = this.failures = 0;
 };
 
 ConsoleReporter.prototype = {
   logSuccess: function (example, got) {
+    this.successes++;
     console.log('Passed:', example.textSummary());
   },
   logFailure: function (example, got) {
+    this.failures++;
     console.log('Failed:', example.expr);
     console.log('Expected:');
     console.log(example.expected);
@@ -825,18 +849,16 @@ Runner.prototype = {
         this._runWait();
         break;
       }
-      if (this._abortCalled) {
-        console.log('Abort called: ' + this._abortCalled);
-      }
       this.evalUninit();
       this._currentExample.check();
-      this._currentExample = null;
       if (this._abortCalled) {
         // FIXME: this should show that while finished, and maybe successful,
         // the tests were aborted
+        this.reporter.logAbort(this._currentExample, this._abortCalled);
         this._finish();
         break;
       }
+      this._currentExample = null;
     }
   },
 
