@@ -28,8 +28,7 @@ if (window.mozRTCPeerConnection) {
 }
 
 if (typeof RTCPeerConnection == "undefined") {
-  console.warn("RTCPeerConnection is not supported in this browser, cannot test!");
-  Abort();
+  Abort("RTCPeerConnection is not supported/enabled in this browser, cannot test!");
 }
 
 repr.register(
@@ -100,6 +99,20 @@ if (src) {
 }
 
 // => Script passed: ...
+
+try {
+  var testPC = new RTCPeerConnection();
+} catch (e) {
+  if (e.name == "Error") {
+    Abort("No RTCPeerConnection (maybe you need to set media.peerconnection.enabled in about:config)");
+  }
+}
+
+if (! navigator.mozGetUserMedia) {
+  Abort("No navigator.mozGetUserMedia (maybe you need to set media.navigator.enabled in about:config)");
+}
+
+// =>
 </pre>
 
 </p>
