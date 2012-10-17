@@ -13,6 +13,8 @@ print(conn1);
 
 // => ...
 
+// TODO: onDataChannel doesn't work, need to update
+
 conn1.onDataChannel = function (channel) {
   print('Got channel1', channel);
   print('conn1 readyState', conn1.readyState);
@@ -29,8 +31,6 @@ conn1.onDataChannel = function (channel) {
   Spy.on(channel1, 'channel1.onclose');
 };
 
-Spy.on('conn1.onConnection');
-Spy.on('conn1.onClosedConnection');
 conn1.addStream(conn1.createFakeMediaStream("audio", true));
 Spy.on('conn1.onaddstream');
 
@@ -71,8 +71,6 @@ conn2.onDataChannel = function (channel) {
 
 // =>
 
-Spy.on('conn2.onConnection');
-Spy.on('conn2.onClosedConnection');
 conn2.addStream(conn2.createFakeMediaStream("audio", true));
 Spy.on('conn2.onaddstream');
 conn2.setRemoteDescription(conn1Offer, Spy('conn2.setRemoteDescription', function () {

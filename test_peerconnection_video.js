@@ -9,15 +9,9 @@ print(conn1);
 
 // FIXME: never fires:
 Spy.on('conn1.onstatechange');
-// onConnection is an old name
-// Also doesn't seem to work
-Spy.on('conn1.onConnection');
-// FIXME: onopen is not implemented
+// FIXME: onopen is not implemented or allowed
 //Spy.on('conn1.onopen');
-// onCloseConnection is an old name
-// Also doesn't seem to work
-Spy.on('conn1.onClosedConnection');
-// FIXME: onclose is not implemented
+// FIXME: onclose is not implemented or allowed
 //Spy.on('conn1.onclose');
 Spy.on('conn1.onaddstream');
 Spy.on('conn1.onremovestream');
@@ -27,9 +21,7 @@ Spy.on('conn1.onicecandidate');
 Spy.on('conn1.onicechange');
 
 Spy.on('conn2.onstatechange');
-Spy.on('conn2.onConnection');
 //Spy.on('conn2.onopen');
-Spy.on('conn2.onClosedConnection');
 //Spy.on('conn2.onclose');
 Spy.on('conn2.onaddstream');
 Spy.on('conn2.onremovestream');
@@ -40,19 +32,24 @@ Spy.on('conn2.onicechange');
 
 var conn1Stream, conn2Stream;
 
-navigator.mozGetUserMedia({video: true}, Spy('mozGetUserMedia', function (stream) {
+navigator.mozGetUserMedia({video: true, fake: true}, Spy('mozGetUserMedia', function (stream) {
   // FIXME: if I add this stream (instead of the fake stream), I get an 8 error
   //conn1.addStream(stream);
-  conn1.addStream(conn1Stream = conn1.createFakeMediaStream('audio'));
+  conn1.addStream(conn1Stream = stream);
   // FIXME: this seems to do nothing
   Spy.on('conn1Stream.onended');
   //conn2.addStream(stream);
-  conn2.addStream(conn2Stream = conn2.createFakeMediaStream('audio'));
-  Spy.on('conn1Stream.onended');
-}, {wait: true}), Spy('navigator.mozGetUserMedia/failed'));
+  navigator.mozGetUserMedia({video: true, fake: true}, Spy("mozGetUserMedia2", function (stream2) {
+    conn2.addStream(conn2Stream = stream);
+    Spy.on('conn2Stream.onended');
+  }), Spy("mozGetUserMedia2/failed"));
+}), Spy('mozGetUserMedia/failed'));
+
+Spy("mozGetUserMedia2").wait();
 
 /* =>
 mozGetUserMedia([object MediaStream])
+mozGetUserMedia2([object MediaStream])
 */
 
 // = SECTION Connect the connections
