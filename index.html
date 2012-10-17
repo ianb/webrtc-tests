@@ -59,14 +59,14 @@ repr.register(
     if (! o.localStreams) {
       lines.push('invalid undefined localStreams');
     } else if (o.localStreams.length) {
-      lines.push('localStreams: ' + repr.arrayRepr(o.localStreams, indentString+'  '));
+      lines.push('localStreams: ' + repr(o.localStreams, indentString+'  '));
     } else {
       lines.push('no localStreams');
     }
     if (! o.remoteStreams) {
       lines.push('invalid undefined remoteStreams');
     } else if (o.remoteStreams.length) {
-      lines.push('remoteStreams: ' + repr.arrayRepr(o.remoteStreams, indentString+'  '));
+      lines.push('remoteStreams: ' + repr(o.remoteStreams, indentString+'  '));
     } else {
       lines.push('no remoteStreams');
     }

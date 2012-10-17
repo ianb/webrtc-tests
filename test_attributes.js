@@ -7,8 +7,8 @@ print(local);
   readyState: ("undefined") (invalid readyState)
   iceState: ("undefined") (invalid iceState)
   iceGatheringState: ("undefined") (invalid iceGatheringState)
-  invalid undefined localStreams
-  invalid undefined remoteStreams
+  no localStreams
+  no remoteStreams
 ]
 */
 
@@ -16,10 +16,19 @@ print(local);
 print(local instanceof RTCPeerConnection);
 // => false
 
-var audioStream = navigator.mozGetUserMedia({type: 'audio', fake: true});
-print(audioStream);
+navigator.mozGetUserMedia({audio: true, fake: true}, function () {});
 
-// => [object MediaStream]
+// FIXME: this shouldn't be an error, filed: https://bugzilla.mozilla.org/show_bug.cgi?id=802835
+// => Error: [Exception...Not enough arguments [nsIDOMNavigatorUserMedia.mozGetUserMedia]...
+
+var audioStream;
+navigator.mozGetUserMedia({audio: true, fake: true}, Spy('mozGetUserMedia', function (stream) {
+  audioStream = stream;
+}), Spy('mozGetUserMedia/failed'));
+
+Spy('mozGetUserMedia').wait();
+
+// => mozGetUserMedia([object MediaStream])
 
 local.addStream(audioStream);
 
@@ -40,10 +49,17 @@ print({
 }
 */
 
+var remoteAudioStream;
+navigator.mozGetUserMedia({audio: true, fake: true}, Spy('mozGetUserMedia', function (stream) {
+  remoteAudioStream = stream;
+}), Spy('mozGetUserMedia/failed'));
+Spy('mozGetUserMedia').wait();
+
+// => ...
+
 // FIXME: I don't believe any of the other track stuff is working as in the spec
 
 var remote = new RTCPeerConnection();
-var remoteAudioStream = remote.createFakeMediaStream('audio');
 remote.addStream(remoteAudioStream);
 
 // =>
@@ -56,7 +72,7 @@ local.createOffer(Spy('local.createOffer', function (offer) {
   }), Spy('local.setLocalDescription/failed'));
 }), Spy('local.ceateOffer/failed'));
 
-Spy('local.setLocalDescription').wait();
+Spy('local.setLocalDescription').wait(10000);
 
 // FIXME: setLocalDescription should get no arguments
 /* =>
@@ -82,7 +98,7 @@ remote.setRemoteDescription(localOffer, Spy('remote.setRemoteDescription', funct
   }), Spy('remote.createAnswer/failed'));
 }), Spy('remote.setRemoteDescription/failed'));
 
-Spy('remote.setLocalDescription').wait();
+Spy('remote.setLocalDescription').wait(15000);
 
 // FIXME: no argument to setRemoteDescription, setLocalDescription
 /* =>

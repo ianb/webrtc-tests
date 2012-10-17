@@ -18,8 +18,20 @@ Spy.on('pc2.onaddstream');
 Spy.on('pc2.onremovestream');
 
 var pc1Stream;
-pc1.addStream(pc1Stream = pc1.createFakeMediaStream("audio"));
-pc2.addStream(pc2.createFakeMediaStream("audio"));
+navigator.mozGetUserMedia({audio: true, fake: true}, Spy("mozGetUserMedia", function (stream) {
+  pc1Stream = stream;
+}, {wait: true}), Spy("mozGetUserMedia/failed"));
+// => ...
+
+pc1.addStream(pc1Stream);
+
+var pc2Stream;
+navigator.mozGetUserMedia({audio: true, fake: true}, Spy("mozGetUserMedia", function (stream) {
+  pc2Stream = stream;
+}, {wait: true}), Spy("mozGetUserMedia/failed"));
+// => ...
+
+pc2.addStream(pc2Stream);
 
 print('pc1', pc1.localStreams);
 print('pc2', pc2.localStreams);
